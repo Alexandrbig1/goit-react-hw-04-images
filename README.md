@@ -1,12 +1,13 @@
-# **Image Finder PixabayAPI** refactored from classes to hooks
+# **Image Finder PixabayAPI**
 <img align="right" src="https://media.giphy.com/media/du3J3cXyzhj75IOgvA/giphy.gif" width="100"/>
 
 doing homework while studying in bootcamp @GoIT on Fullstack developer course
 
 ## Project Specifications:
 
+Refactored from classes to hooks
 You can find any pictures on search bar
-React module(states/hooks/classes/RestAPI/derivedStates/events/props/forms/libraries/Formik/Yup/ReactIcons/modernNormalize/styledComponents/nanoid/ReactLoaderSpinner/axios/ReactHotToast/)
+React module(states/hooks/RestAPI/derivedStates/events/props/forms/libraries/Formik/Yup/ReactIcons/modernNormalize/styledComponents/nanoid/ReactLoaderSpinner/axios/ReactHotToast/)
 
 ## Languages and Tools:
 <div align="center">  
