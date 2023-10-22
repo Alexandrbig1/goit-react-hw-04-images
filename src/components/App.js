@@ -4,74 +4,64 @@ import { AppDiv } from "./Layout";
 import toast, { Toaster } from "react-hot-toast";
 import Button from "./Button/Button";
 import Loader from "./Loader/Loader";
-import { Component } from "react";
+import { useEffect, useState } from "react";
 import { getApi } from "./api";
 
 const perPage = 12;
 
-export class App extends Component {
-  state = {
-    search: "",
-    page: 1,
-    galleryItems: [],
-    loading: false,
-    error: false,
-  };
+export default function App() {
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [galleryItems, setGalleryItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
-  onSearchSubmit = (e) => {
+  function onSearchSubmit(e) {
     e.preventDefault();
     const newSearch = e.target.search.value.trim().toLowerCase();
 
-    this.setState({ search: newSearch, page: 1, galleryItems: [] });
-  };
+    setSearch(newSearch);
+    setPage(1);
+    setGalleryItems([]);
+  }
 
-  onLoadMoreClick = () => {
-    this.setState((prevState) => ({ page: prevState.page + 1 }));
-  };
+  function onLoadMoreClick() {
+    setPage((prevState) => prevState + 1);
+  }
 
-  async componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.search !== this.state.search ||
-      prevState.page !== this.state.page
-    ) {
+  useEffect(() => {
+    if (search === "") {
+      return;
+    }
+    async function searchPhotos() {
       try {
-        this.setState({ loading: true, error: false });
-        const getPhotos = await getApi(
-          this.state.search,
-          this.state.page,
-          perPage
-        );
-        if (this.state.page < 2) {
+        setLoading(true);
+        setError(false);
+        const getPhotos = await getApi(search, page, perPage);
+        if (page < 2) {
           toast.success(`Hooray! We found ${getPhotos.totalHits} images!`);
         }
 
         const photos = getPhotos.hits;
 
-        this.setState((prevState) => ({
-          galleryItems: [...prevState.galleryItems, ...photos],
-        }));
+        setGalleryItems((prevState) => [...prevState, ...photos]);
       } catch (error) {
-        this.setState({ error: true });
+        setError(true);
       } finally {
-        this.setState({ loading: false });
+        setLoading(false);
       }
     }
-  }
+    searchPhotos();
+  }, [search, page]);
 
-  render() {
-    const { galleryItems, loading, error } = this.state;
-
-    return (
-      <AppDiv>
-        <SearchBar onSubmit={this.onSearchSubmit} />
-        {this.state.galleryItems.length > 0 && (
-          <ImageGallery photos={galleryItems} />
-        )}
-        {galleryItems.length > 1 && <Button onClick={this.onLoadMoreClick} />}
-        {loading && <Loader />}
-        {error && toast.error("Oops, something went wrong! Reload this page!")}
-        <Toaster position="top-right" />
-      </AppDiv>
-    );
-  }
+  return (
+    <AppDiv>
+      <SearchBar onSubmit={onSearchSubmit} />
+      {galleryItems.length > 0 && <ImageGallery photos={galleryItems} />}
+      {galleryItems.length > 1 && <Button onClick={onLoadMoreClick} />}
+      {loading && <Loader />}
+      {error && toast.error("Oops, something went wrong! Reload this page!")}
+      <Toaster position="top-right" />
+    </AppDiv>
+  );
 }
